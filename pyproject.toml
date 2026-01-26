@@ -5,7 +5,7 @@ description = "Quantum-powered cryptography"
 authors = [
     {name = "Rohan Date",email = "rohan.s.date@icloud.com"}
 ]
-license = {text = "MIT"}
+license = "MIT"
 icense-files = ["LICEN[CS]E*"]
 readme = "README.md"
 requires-python = ">=3.14"
@@ -14,8 +14,8 @@ dependencies = [
     "matplotlib (>=3.10.8,<4.0.0)",
     "qiskit-ibm-runtime (>=0.45.0,<0.46.0)",
     "pylatexenc (>=2.10,<3.0)",
-    "ipykernel (>=7.1.0,<8.0.0)",
-    "jupyterlab (>=4.5.2,<5.0.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
+    "colorama (>=0.4.6,<0.5.0)",
 ]
 classifiers = [
   # How mature is this project? Common values are
@@ -38,14 +38,19 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-examples = [
-    "tqdm (>=4.67.1,<5.0.0)",
-    "colorama (>=0.4.6,<0.5.0)",
+notebook = [
+    "ipykernel (>=7.1.0,<8.0.0)",
+    "jupyterlab (>=4.5.2,<5.0.0)",
 ]
 
 [project.urls]
 Homepage = "https://github.com/rsdate/scrypt"
 Issues = "https://github.com/rsdate/scrypt/issues"
+
+# [tool.poetry]
+# packages = [
+#    { include = "scrypt" },
+# ]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

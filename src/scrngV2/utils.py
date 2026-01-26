@@ -1,7 +1,7 @@
 """
 Copyright © 2026 Rohan Date
 
-Utils: This is a file that contains utility functions for `scryptV2`
+Utils: This is a file that contains utility functions for `scrypt`
 
 Methods:
     - `apply_*_gate`: Apply different types of quantum gates (single qubit, rotation, etc.)
@@ -13,7 +13,9 @@ Methods:
     - `convert_to_isa_circuit`: Converts a high-level quantum circuit into an ISA circuit
     - `construct_backend`: Runs a job with backend `backend`, observables `observables`, and ISA circuit `isa_circuit`
 
-The last 4 methods are the core of the `scrypt2` function.
+The last 4 methods are the core of the `scrngV2` function.
+
+Note: This is an internal module, please do no use these functions directly
 """
 
 import random
@@ -94,7 +96,7 @@ def condense_list(ls: list) -> str:
     return condensed
 
 
-def create_qc(n: int, debug: bool = False) -> QuantumCircuit:
+def create_qc(n: int) -> QuantumCircuit:
     gates_to_apply = [
         "x",
         "y",
@@ -179,9 +181,7 @@ def create_qc(n: int, debug: bool = False) -> QuantumCircuit:
     return qc
 
 
-def generate_obeservables(
-    n_qubits: int, n_observables: int, debug: bool = False
-) -> list[SparsePauliOp]:
+def generate_obeservables(n_qubits: int, n_observables: int) -> list[SparsePauliOp]:
     observables_list = [
         "I",
         "I",
@@ -216,15 +216,13 @@ def generate_obeservables(
     return observables
 
 
-def convert_to_isa_circuit(backend, qc: QuantumCircuit, debug: bool = False):
+def convert_to_isa_circuit(backend, qc: QuantumCircuit):
     pm = generate_preset_pass_manager(backend=backend, optimization_level=1)
     isa_circuit = pm.run(qc)
     return isa_circuit
 
 
-def run_job(
-    backend, observables: list[SparsePauliOp], isa_circuit, debug: bool = False
-):
+def run_job(backend, observables: list[SparsePauliOp], isa_circuit):
     # Construct the Estimator instance.
 
     estimator = Estimator(mode=backend)

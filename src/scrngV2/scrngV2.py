@@ -1,15 +1,18 @@
 import math
-import sys
+
+# import sys
+from datetime import datetime
+from time import time
 
 import colorama
 import tqdm
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info import SparsePauliOp
-from qiskit_ibm_runtime import QiskitRuntimeService
-from qiskit_ibm_runtime.fake_provider import FakeBelemV2
 
+# from qiskit_ibm_runtime import QiskitRuntimeService
+from qiskit_ibm_runtime.fake_provider import FakeBelemV2
 from utils import (
-    ScryptV2Error,
+    # ScryptV2Error,
     convert_to_isa_circuit,
     create_qc,
     generate_obeservables,
@@ -18,24 +21,28 @@ from utils import (
 
 colorama.init(autoreset=True)
 
-QiskitRuntimeService.save_account(
-    token="nianJEsv6ys5NgZNiH-lXrmylaGlKWAwRJo105QAduut",
-    instance="crn:v1:bluemix:public:quantum-computing:us-east:a/f636bd5a2ebd4edcb838b926348e8d93:7eb83f45-3262-4fe0-8223-5075583ab379::",
-    overwrite=True,
-)
-
-if str(sys.argv[len(sys.argv) - 1]) == "qpu":
-    BACKEND = QiskitRuntimeService().least_busy(
-        instance="crn:v1:bluemix:public:quantum-computing:us-east:a/f636bd5a2ebd4edcb838b926348e8d93:7eb83f45-3262-4fe0-8223-5075583ab379::",
-        operational=True,
-    )
-elif str(sys.argv[len(sys.argv) - 1]) == "sim":
-    BACKEND = FakeBelemV2()
-else:
-    raise ScryptV2Error("No backend provided.")
+# TODO
+# if __name__ == "__main__":
+#    if str(sys.argv[len(sys.argv) - 1]) == "qpu":
+#        BACKEND = QiskitRuntimeService().least_busy(
+#            operational=True,
+#        )
+#    elif str(sys.argv[len(sys.argv) - 1]) == "sim":
+#        BACKEND = FakeBelemV2()
+#    else:
+#        raise ScryptV2Error("No backend provided.")
+# else:
+#    BACKEND = FakeBelemV2()
 
 
-def scrngV2(a: int, b: int, digits: int = 3, qubits: int = 5, debug: bool = False):
+def __scrngV2(
+    a: int,
+    b: int,
+    digits: int = 3,
+    qubits: int = 5,
+    debug: bool = False,
+    backend=FakeBelemV2(),
+):
     n_qubits = qubits
     print(
         ">>> Creating quantum circuit..." if debug else "",
@@ -56,9 +63,9 @@ def scrngV2(a: int, b: int, digits: int = 3, qubits: int = 5, debug: bool = Fals
         end="\n" if debug else "",
         flush=debug,
     )
-    isa_circuit = convert_to_isa_circuit(backend=BACKEND, qc=qc)
+    isa_circuit = convert_to_isa_circuit(backend=backend, qc=qc)
     print(">>> Running job..." if debug else "", end="\n" if debug else "", flush=debug)
-    job = run_job(backend=BACKEND, observables=observables, isa_circuit=isa_circuit)
+    job = run_job(backend=backend, observables=observables, isa_circuit=isa_circuit)
     values = job.result()[0].data.evs.tolist()
     errors = job.result()[0].data.stds.tolist()
     print(
@@ -75,8 +82,17 @@ def scrngV2(a: int, b: int, digits: int = 3, qubits: int = 5, debug: bool = Fals
     )
 
 
-def random_nums(n: int, debug: bool = False):
+def random_nums(a: int, b: int, n: int, debug: bool = False):
     rn_list = []
+    for i in range(n):
+        rn_list.append(__scrngV2(a, b, debug=debug))
+    return rn_list
+
+
+def random_nums_pretty(a: int, b: int, n: int, debug: bool = False):
+    dt = datetime.now()
+    rn_list = []
+    start = time()
     for i in tqdm.trange(
         n,
         desc="Generation progress",
@@ -88,5 +104,19 @@ def random_nums(n: int, debug: bool = False):
         print(
             f"Number {i + 1}" if debug else "", end="\n" if debug else "", flush=debug
         )
-        rn_list.append(scrngV2(1, 10, debug=debug))
+        rn_list.append(__scrngV2(a, b, debug=debug))
+    end = time()
+    print(colorama.Style.BRIGHT + "=========== Results ===========")
+    print(
+        colorama.Fore.BLUE + "Generated numbers:",
+        colorama.Style.DIM + str(rn_list),
+    )
+    print(
+        colorama.Fore.CYAN + "Generation time:",
+        colorama.Style.DIM + f"{(end - start):.2f}s",
+    )
+    print(
+        colorama.Fore.RED + "Generation timestamp:",
+        colorama.Style.DIM + f"{dt.strftime('Generation on %Y-%m-%d at %I:%M.%S %p')}",
+    )
     return rn_list
