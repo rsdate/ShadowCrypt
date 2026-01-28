@@ -37,9 +37,6 @@ colorama.init(autoreset=True)
 
 
 def __scrngV2(
-    a: int,
-    b: int,
-    digits: int = 3,
     qubits: int = 5,
     debug: bool = False,
     backend=FakeBelemV2(),
@@ -74,23 +71,22 @@ def __scrngV2(
         end="\n" if debug else "",
         flush=debug,
     )
-    return round(
-        math.fabs(
-            math.fsum(values) / len(values) * math.fsum(errors) * 1000 / 30 * (b - a)
-        )
-        + a,
-        ndigits=digits,
-    )
+    return math.fabs(math.fsum(values) / len(values) * math.fsum(errors)) * 1000
 
 
-def __random_nums_base(a: int, b: int, n: int, debug: bool = False):
+def __random_nums_base(a: int, b: int, n: int, digits: int = 3, debug: bool = False):
     rn_list = []
-    for i in range(n):
-        rn_list.append(__scrngV2(a, b, debug=debug))
-    return rn_list
+    for i in range(n + 1):
+        rn_list.append(__scrngV2(debug=debug))
+    rn_list_normalized = [i / max(rn_list) for i in rn_list]
+    del rn_list_normalized[rn_list_normalized.index(1.0)]
+    rn_list_final = [
+        round((i * (b - a)) + a, ndigits=digits) for i in rn_list_normalized
+    ]
+    return [int(i) for i in rn_list_final] if digits == 0 else rn_list_final
 
 
-def __random_nums_pretty(a: int, b: int, n: int, debug: bool = False):
+def __random_nums_pretty(a: int, b: int, n: int, digits: int = 3, debug: bool = False):
     dt = datetime.now()
     rn_list = []
     start = time()
@@ -103,14 +99,23 @@ def __random_nums_pretty(a: int, b: int, n: int, debug: bool = False):
         disable=debug,
     ):
         print(
-            f"Number {i + 1}" if debug else "", end="\n" if debug else "", flush=debug
+            f"Number {i + 1}" if debug else "",
+            end="\n" if debug else "",
+            flush=debug,
         )
-        rn_list.append(__scrngV2(a, b, debug=debug))
+        rn_list.append(__scrngV2(debug=debug))
     end = time()
+    rn_list.append(__scrngV2(debug=debug))
+    rn_list_normalized = [i / max(rn_list) for i in rn_list]
+    del rn_list_normalized[rn_list_normalized.index(1.0)]
+    rn_list_final = [
+        round((i * (b - a)) + a, ndigits=digits) for i in rn_list_normalized
+    ]
     print(colorama.Style.BRIGHT + "=========== Results ===========")
     print(
         colorama.Fore.BLUE + "Generated numbers:",
-        colorama.Style.DIM + str(rn_list),
+        colorama.Style.DIM
+        + str([int(i) for i in rn_list_final] if digits == 0 else rn_list_final),
     )
     print(
         colorama.Fore.CYAN + "Generation time:",
@@ -120,15 +125,17 @@ def __random_nums_pretty(a: int, b: int, n: int, debug: bool = False):
         colorama.Fore.RED + "Generation timestamp:",
         colorama.Style.DIM + f"{dt.strftime('Generation on %Y-%m-%d at %I:%M.%S %p')}",
     )
-    return rn_list
+    return rn_list_final
 
 
-def random_nums(a: int, b: int, n: int, mode: str = "base", debug: bool = False):
+def random_nums(
+    a: int, b: int, n: int, mode: str = "base", debug: bool = False, digits: int = 3
+):
     if mode == "base":
-        out = __random_nums_base(a, b, n, debug=debug)
-        return out
+        out = __random_nums_base(a, b, n, digits=digits, debug=debug)
+        return [int(i) for i in out] if digits == 0 else out
     elif mode == "pretty":
-        out = __random_nums_pretty(a, b, n, debug=debug)
-        return out
+        out = __random_nums_pretty(a, b, n, digits=digits, debug=debug)
+        return [int(i) for i in out] if digits == 0 else out
     else:
         raise ScryptError("Invalid mode provided")
