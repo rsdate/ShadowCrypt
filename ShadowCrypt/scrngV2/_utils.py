@@ -14,7 +14,7 @@ Methods:
 
 The last 4 methods are the core of the `scrngV2` function.
 
-Note: This is an internal module, please do no use these functions directly
+Note: This is an internal module, please do not use these functions directly
 """
 
 import random
