@@ -12,7 +12,7 @@ from qiskit.quantum_info import SparsePauliOp
 # from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit_ibm_runtime.fake_provider import FakeBelemV2
 
-from ShadowCrypt.scrngV2._utils import (
+from rcrypt.scrngV2._utils import (
     ScryptError,
     convert_to_isa_circuit,
     create_qc,

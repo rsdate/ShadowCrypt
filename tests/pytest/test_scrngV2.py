@@ -1,4 +1,4 @@
-import ShadowCrypt.scrngV2.scrngV2 as sc
+import rcrypt.scrngV2.scrngV2 as sc
 
 
 def test_scrngV2():
