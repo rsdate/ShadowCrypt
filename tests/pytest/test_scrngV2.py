@@ -1,4 +1,4 @@
-import rcrypt.scrngV2.scrngV2 as sc
+import rqcrypt.scrngV2.scrngV2 as sc
 
 
 def test_scrngV2():

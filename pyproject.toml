@@ -1,5 +1,5 @@
 [project]
-name = "rcrypt"
+name = "rqcrypt"
 version = "0.0.1"
 description = "(Very simple) Quantum-powered cryptography"
 authors = [

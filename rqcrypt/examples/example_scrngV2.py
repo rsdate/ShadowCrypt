@@ -3,7 +3,7 @@ import time
 
 import colorama
 
-import rcrypt as rc
+import rqcrypt as rc
 
 colorama.init(autoreset=True)
 
